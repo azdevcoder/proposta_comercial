@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>AzDev Coder - Proposta Comercial</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <aside class="sidebar">
+            <img src="logo_azdevcoder.jpeg" alt="Logo" class="logo-sidebar">
+            <h2>Proposta Comercial</h2>
+            
+            <div class="input-section">
+                <input type="text" id="cliente" placeholder="Nome do Cliente" oninput="atualizarPreview()">
+                <input type="text" id="endereco" placeholder="Endereço" oninput="atualizarPreview()">
+                <input type="text" id="whatsapp" placeholder="WhatsApp (Ex: 5544...)" oninput="atualizarPreview()">
+            </div>
+
+            <div id="itens-container">
+                <div class="item-row">
+                    <input type="number" class="item-qtd" value="1" oninput="atualizarPreview()">
+                    <input type="text" class="item-desc" placeholder="Serviço" oninput="atualizarPreview()">
+                    <input type="number" class="item-valor" placeholder="R$ Unit." oninput="atualizarPreview()">
+                </div>
+            </div>
+            <button onclick="adicionarItem()" class="btn-add">+ Item</button>
+
+            <div class="discount-section">
+                <label>Desconto (R$):</label>
+                <input type="number" id="desconto" value="0" oninput="atualizarPreview()" placeholder="0.00">
+            </div>
+
+            <label>Observação do Serviço:</label>
+            <textarea id="observacoes" rows="4" oninput="atualizarPreview()"></textarea>
+            
+            <label>Forma de Pagamento:</label>
+            <textarea id="condicoes" rows="2" oninput="atualizarPreview()">Pagamento via PIX ou Cartão em até 3x sem juros. Validade: 10 dias.</textarea>
+
+            <div class="actions">
+                <button onclick="abrirHTML()" class="btn-html">VISUALIZAR EM HTML</button>
+                <button onclick="enviarProposta()" class="btn-send">BAIXAR E ENVIAR WHATSAPP</button>
+            </div>
+        </aside>
+
+        <main class="preview-panel">
+            <div class="preview-header">PRÉ-VISUALIZAÇÃO EM TEMPO REAL</div>
+            <iframe id="pdf-preview"></iframe>
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
