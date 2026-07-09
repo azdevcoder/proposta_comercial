@@ -5,51 +5,483 @@
     <title>AzDev Coder - Proposta Comercial</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
-    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --az-blue: #0084FF;
+            --az-blue-hover: #0066CC;
+            --az-light-bg: #F4F6F9;
+            --az-panel: #FFFFFF;
+            --text-main: #2D3748;
+            --text-muted: #718096;
+            --border-color: #E2E8F0;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body { 
+            margin: 0; 
+            background: var(--az-light-bg); 
+            color: var(--text-main); 
+            overflow: hidden; 
+        }
+
+        .container { 
+            display: flex; 
+            height: 100vh; 
+        }
+
+        /* Painel Lateral de Inputs */
+        .sidebar { 
+            width: 400px; 
+            background: var(--az-panel); 
+            padding: 25px; 
+            border-right: 1px solid var(--border-color); 
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 4px 0 10px rgba(0, 0, 0, 0.02);
+        }
+
+        .header-sidebar {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo-sidebar { 
+            width: 50px; 
+            height: 50px; 
+            border-radius: 8px; 
+            object-fit: cover;
+            border: 1px solid var(--border-color);
+        }
+
+        h2 { 
+            color: var(--text-main); 
+            font-size: 1.2rem; 
+            margin: 0; 
+            font-weight: 700;
+        }
+
+        .section-title {
+            font-size: 0.75rem;
+            color: var(--az-blue);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+            margin: 15px 0 10px 0;
+        }
+
+        label { 
+            font-size: 0.8rem; 
+            color: var(--text-muted); 
+            display: block; 
+            margin-bottom: 6px; 
+            font-weight: 500;
+        }
+
+        input, textarea { 
+            width: 100%; 
+            padding: 10px 12px; 
+            margin-bottom: 12px; 
+            border-radius: 6px; 
+            border: 1px solid var(--border-color); 
+            background: #FAFAFA; 
+            color: var(--text-main); 
+            font-size: 0.9rem; 
+            transition: all 0.2s ease;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--az-blue);
+            background: #FFF;
+            box-shadow: 0 0 0 3px rgba(0, 132, 255, 0.1);
+        }
+
+        .item-row { 
+            display: flex; 
+            gap: 8px; 
+            margin-bottom: 8px; 
+        }
+        
+        .item-qtd { width: 75px !important; text-align: center; }
+        .item-desc { flex: 1; }
+        .item-valor { width: 110px !important; }
+
+        .discount-section { 
+            background: rgba(0, 132, 255, 0.03); 
+            padding: 15px; 
+            border-radius: 8px; 
+            margin: 15px 0; 
+            border: 1px dashed rgba(0, 132, 255, 0.3); 
+        }
+        
+        .discount-section input { margin-bottom: 0; }
+
+        .btn-add { 
+            background: #FFF; 
+            border: 1px dashed var(--az-blue); 
+            color: var(--az-blue); 
+            width: 100%; 
+            padding: 10px; 
+            cursor: pointer; 
+            margin-bottom: 20px; 
+            border-radius: 6px; 
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+        
+        .btn-add:hover { background: rgba(0, 132, 255, 0.05); }
+
+        .actions { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 10px; 
+            margin-top: auto; 
+            padding-top: 20px;
+        }
+        
+        .btn-send { 
+            background: var(--az-blue); 
+            color: white; 
+            border: none; 
+            padding: 14px; 
+            font-weight: 600; 
+            cursor: pointer; 
+            border-radius: 6px; 
+            font-size: 0.95rem;
+            box-shadow: 0 4px 6px rgba(0, 132, 255, 0.15);
+        }
+        
+        .btn-send:hover { background: var(--az-blue-hover); }
+        
+        .btn-html { 
+            background: #FFF; 
+            color: var(--text-main); 
+            border: 1px solid var(--border-color); 
+            padding: 10px; 
+            cursor: pointer; 
+            border-radius: 6px; 
+            font-size: 0.85rem; 
+            font-weight: 500;
+        }
+        
+        .btn-html:hover { background: #F8FAFC; }
+
+        /* Painel de Pré-visualização */
+        .preview-panel { 
+            flex: 1; 
+            display: flex; 
+            flex-direction: column; 
+            background: #EAF0F6; 
+            padding: 25px; 
+        }
+        
+        .preview-header { 
+            padding-bottom: 12px; 
+            font-size: 0.75rem; 
+            color: var(--text-muted); 
+            letter-spacing: 2px; 
+            text-transform: uppercase; 
+            font-weight: 700;
+        }
+        
+        #pdf-preview { 
+            width: 100%; 
+            height: 100%; 
+            border: none; 
+            background: white; 
+            border-radius: 8px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        }
+    </style>
 </head>
 <body>
+
     <div class="container">
         <aside class="sidebar">
-            <img src="logo_azdevcoder.jpeg" alt="Logo" class="logo-sidebar">
-            <h2>Proposta Comercial</h2>
-            
-            <div class="input-section">
-                <input type="text" id="cliente" placeholder="Nome do Cliente" oninput="atualizarPreview()">
-                <input type="text" id="endereco" placeholder="Endereço" oninput="atualizarPreview()">
-                <input type="text" id="whatsapp" placeholder="WhatsApp (Ex: 5544...)" oninput="atualizarPreview()">
+            <div class="header-sidebar">
+                <img src="logo_azdevcoder.jpeg" alt="Logo" class="logo-sidebar" onerror="this.style.display='none'">
+                <h2>AzDev Coder</h2>
             </div>
+            
+            <div class="section-title">Dados do Cliente</div>
+            <input type="text" id="cliente" placeholder="Nome do Cliente" oninput="atualizarPreview()">
+            <input type="text" id="endereco" placeholder="Endereço" oninput="atualizarPreview()">
+            <input type="text" id="whatsapp" placeholder="WhatsApp (Ex: 5544999999999)" oninput="atualizarPreview()">
 
+            <div class="section-title">Itens do Orçamento</div>
             <div id="itens-container">
                 <div class="item-row">
-                    <input type="number" class="item-qtd" value="1" oninput="atualizarPreview()">
-                    <input type="text" class="item-desc" placeholder="Serviço" oninput="atualizarPreview()">
-                    <input type="number" class="item-valor" placeholder="R$ Unit." oninput="atualizarPreview()">
+                    <input type="number" class="item-qtd" value="1" min="1" oninput="atualizarPreview()">
+                    <input type="text" class="item-desc" placeholder="Descrição do Serviço" oninput="atualizarPreview()">
+                    <input type="number" class="item-valor" placeholder="R$ Unit." step="0.01" oninput="atualizarPreview()">
                 </div>
             </div>
-            <button onclick="adicionarItem()" class="btn-add">+ Item</button>
+            <button onclick="adicionarItem()" class="btn-add">+ Adicionar Item</button>
 
             <div class="discount-section">
-                <label>Desconto (R$):</label>
-                <input type="number" id="desconto" value="0" oninput="atualizarPreview()" placeholder="0.00">
+                <label>Desconto Adicional (R$):</label>
+                <input type="number" id="desconto" value="0" step="0.01" oninput="atualizarPreview()" placeholder="0.00">
             </div>
 
+            <div class="section-title">Informações Adicionais</div>
             <label>Observação do Serviço:</label>
-            <textarea id="observacoes" rows="4" oninput="atualizarPreview()"></textarea>
+            <textarea id="observacoes" rows="3" oninput="atualizarPreview()"></textarea>
             
-            <label>Forma de Pagamento:</label>
-            <textarea id="condicoes" rows="2" oninput="atualizarPreview()">Pagamento via PIX ou Cartão em até 3x sem juros. Validade: 10 dias.</textarea>
+            <label>Forma / Condições de Pagamento:</label>
+            <textarea id="condicoes" rows="3" oninput="atualizarPreview()">Pagamento via PIX ou Cartão em até 3x sem juros.&#10;Validade da proposta: 10 dias.</textarea>
 
             <div class="actions">
-                <button onclick="abrirHTML()" class="btn-html">VISUALIZAR EM HTML</button>
-                <button onclick="enviarProposta()" class="btn-send">BAIXAR E ENVIAR WHATSAPP</button>
+                <button onclick="abrirHTML()" class="btn-html">Visualizar Versão Web (HTML)</button>
+                <button onclick="enviarProposta()" class="btn-send">Baixar PDF & Chamar WhatsApp</button>
             </div>
         </aside>
 
         <main class="preview-panel">
-            <div class="preview-header">PRÉ-VISUALIZAÇÃO EM TEMPO REAL</div>
+            <div class="preview-header">Pré-visualização do PDF (Fundo Claro)</div>
             <iframe id="pdf-preview"></iframe>
         </main>
     </div>
-    <script src="script.js"></script>
+
+    <script>
+        // Insira aqui o caminho correto da sua imagem logo
+        const CAMINHO_LOGO = 'logo_azdevcoder.jpeg'; 
+
+        function adicionarItem() {
+            const container = document.getElementById('itens-container');
+            const div = document.createElement('div');
+            div.className = 'item-row';
+            div.innerHTML = `
+                <input type="number" class="item-qtd" value="1" min="1" oninput="atualizarPreview()">
+                <input type="text" class="item-desc" placeholder="Descrição do Serviço" oninput="atualizarPreview()">
+                <input type="number" class="item-valor" placeholder="R$ Unit." step="0.01" oninput="atualizarPreview()">
+            `;
+            container.appendChild(div);
+            atualizarPreview();
+        }
+
+        function obterDadosCalculados() {
+            const qtds = document.querySelectorAll('.item-qtd');
+            const descs = document.querySelectorAll('.item-desc');
+            const valores = document.querySelectorAll('.item-valor');
+            const desconto = parseFloat(document.getElementById('desconto').value) || 0;
+
+            let rows = [];
+            let totalBruto = 0;
+
+            descs.forEach((d, i) => {
+                const q = parseFloat(qtds[i].value) || 0;
+                const vUnit = parseFloat(valores[i].value) || 0;
+                const vTotal = q * vUnit;
+                totalBruto += vTotal;
+                if (d.value || vUnit > 0) {
+                    rows.push([q, d.value || "Serviço", `R$ ${vUnit.toFixed(2)}`, `R$ ${vTotal.toFixed(2)}`]);
+                }
+            });
+
+            return {
+                rows,
+                totalBruto,
+                desconto,
+                totalLiquido: totalBruto - desconto
+            };
+        }
+
+        function gerarDoc() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const dados = obterDadosCalculados();
+
+            const cliente = document.getElementById('cliente').value || "Cliente Exemplo";
+            const endereco = document.getElementById('endereco').value || "Não informado";
+            const condicoes = document.getElementById('condicoes').value;
+            const observacoes = document.getElementById('observacoes').value || ""; 
+
+            // --- DESIGN DO PDF (FUNDO CLARÍSSIMO / CLEAN) ---
+            // Fundo total branco
+            doc.setFillColor(255, 255, 255);
+            doc.rect(0, 0, 210, 297, 'F');
+
+            // Top Banner minimalista cinza claro para destacar o header
+            doc.setFillColor(248, 250, 252);
+            doc.rect(0, 0, 210, 42, 'F');
+            
+            // Linha divisória fina em Azul AzDev no topo
+            doc.setFillColor(0, 132, 255);
+            doc.rect(0, 0, 210, 3, 'F');
+            
+            // Renderização da Logo no PDF
+            try {
+                const img = new Image();
+                img.src = CAMINHO_LOGO;
+                // Posicionado no topo esquerdo (X: 14, Y: 8, Tamanho: 26x26)
+                doc.addImage(img, 'JPEG', 14, 8, 26, 26); 
+            } catch (e) {
+                console.error("Erro ao carregar a logo no PDF:", e);
+            }
+
+            // Título Alinhado à Direita
+            doc.setFontSize(20);
+            doc.setTextColor(45, 55, 72); // Grafite escuro
+            doc.setFont("helvetica", "bold");
+            doc.text("PROPOSTA COMERCIAL", 196, 24, { align: "right" });
+
+            // Subtítulo/Subtexto da Empresa
+            doc.setFontSize(9);
+            doc.setFont("helvetica", "normal");
+            doc.setTextColor(113, 128, 150);
+            doc.text("AzDev Coder - Soluções Tecnológicas", 196, 31, { align: "right" });
+
+            // Informações do cliente em Tabela Minimalista sem linhas pesadas
+            doc.autoTable({
+                startY: 50,
+                body: [
+                    ['DATA DE EMISSÃO:', new Date().toLocaleDateString()],
+                    ['CLIENTE:', cliente.toUpperCase()], 
+                    ['ENDEREÇO:', endereco]
+                ],
+                theme: 'plain',
+                styles: { fontSize: 9, textColor: [71, 80, 96], cellPadding: 3 },
+                columnStyles: { 0: { fontStyle: 'bold', textColor: [0, 132, 255], cellWidth: 40 } }
+            });
+
+            // Tabela Principal de Itens Orçados
+            doc.autoTable({
+                startY: doc.lastAutoTable.finalY + 8,
+                head: [['QTD', 'DESCRIÇÃO DOS SERVIÇOS', 'VALOR UNIT.', 'TOTAL']],
+                body: dados.rows,
+                headStyles: { fillColor: [0, 132, 255], textColor: [255, 255, 255], fontStyle: 'bold' },
+                bodyStyles: { fillColor: [255, 255, 255], textColor: [45, 55, 72], lineWidth: 0.1, lineColor: [226, 232, 240] },
+                alternateRowStyles: { fillColor: [250, 252, 254] },
+                styles: { fontSize: 9, cellPadding: 4 }
+            });
+
+            // Resumo de Fechamento Financeiro
+            let finalY = doc.lastAutoTable.finalY + 8;
+            doc.setFontSize(10);
+            doc.setFont("helvetica", "normal");
+            doc.setTextColor(113, 128, 150);
+            doc.text(`Total Bruto: R$ ${dados.totalBruto.toFixed(2)}`, 196, finalY, { align: 'right' });
+            doc.text(`Desconto Aplicado: R$ ${dados.desconto.toFixed(2)}`, 196, finalY + 6, { align: 'right' });
+            
+            // Total Líquido em Destaque
+            doc.setFontSize(13);
+            doc.setTextColor(0, 132, 255);
+            doc.setFont("helvetica", "bold");
+            doc.text(`TOTAL LÍQUIDO: R$ ${dados.totalLiquido.toFixed(2)}`, 196, finalY + 15, { align: 'right' });
+
+            finalY += 24;
+
+            // Seção de Observações customizadas
+            if (observacoes.trim() !== "") {
+                doc.autoTable({
+                    startY: finalY,
+                    head: [['OBSERVAÇÕES DO PROJETO']],
+                    body: [[observacoes]],
+                    headStyles: { fillColor: [113, 128, 150], textColor: [255, 255, 255] },
+                    bodyStyles: { fillColor: [248, 250, 252], textColor: [45, 55, 72] },
+                    theme: 'grid',
+                    styles: { lineColor: [226, 232, 240] }
+                });
+                finalY = doc.lastAutoTable.finalY + 8;
+            }
+
+            // Seção de Termos e Condições
+            doc.autoTable({
+                startY: finalY,
+                head: [['CONDIÇÕES DE PAGAMENTO & VALIDADE']],
+                body: [[condicoes]],
+                headStyles: { fillColor: [45, 55, 72], textColor: [255, 255, 255], halign: 'left' },
+                bodyStyles: { fillColor: [248, 250, 252], textColor: [45, 55, 72], halign: 'left' },
+                theme: 'grid',
+                styles: { lineColor: [226, 232, 240] }
+            });
+
+            return doc;
+        }
+
+        function abrirHTML() {
+            const dados = obterDadosCalculados();
+            const cliente = document.getElementById('cliente').value || "Cliente";
+            const endereco = document.getElementById('endereco').value || "Não informado";
+            const obs = document.getElementById('observacoes').value || "";
+            const condicoes = document.getElementById('condicoes').value;
+
+            const novaJanela = window.open('', '_blank');
+            novaJanela.document.write(`
+                <html>
+                <head>
+                    <title>AzDev Coder - Proposta ${cliente}</title>
+                    <style>
+                        body { background: #F4F6F9; color: #2D3748; font-family: 'Inter', sans-serif; padding: 40px; margin: 0; }
+                        .paper { background: white; max-width: 800px; margin: 0 auto; padding: 40px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+                        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #0084FF; padding-bottom: 20px; }
+                        h1 { color: #2D3748; margin: 0; font-size: 1.8rem; }
+                        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                        th { background: #0084FF; color: white; padding: 12px; border: 1px solid #E2E8F0; text-align: left; }
+                        td { padding: 12px; border: 1px solid #E2E8F0; background: #FFF; }
+                        tr:nth-child(even) td { background: #F8FAFC; }
+                        .resumo { text-align: right; margin-top: 20px; line-height: 1.8; color: #718096; }
+                        .total { font-size: 22px; color: #0084FF; font-weight: bold; margin-top: 5px; }
+                        .box { margin-top: 25px; background: #F8FAFC; padding: 20px; border-left: 4px solid #0084FF; border-radius: 0 6px 6px 0; }
+                        .label { color: #0084FF; font-weight: bold; text-transform: uppercase; font-size: 0.8rem; }
+                    </style>
+                </head>
+                <body>
+                    <div class="paper">
+                        <div class="header">
+                            <div><h1>PROPOSTA COMERCIAL</h1><p style="color:#718096; margin:5px 0 0 0;">AzDev Coder</p></div>
+                        </div>
+                        <p style="margin-top:25px;"><span class="label">CLIENTE:</span> ${cliente} <br> <span class="label">ENDEREÇO:</span> ${endereco}</p>
+                        <table>
+                            <thead><tr><th>QTD</th><th>DESCRIÇÃO</th><th>UNITÁRIO</th><th>TOTAL</th></tr></thead>
+                            <tbody>${dados.rows.map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td></tr>`).join('')}</tbody>
+                        </table>
+                        <div class="resumo">
+                            <div>Total Bruto: R$ ${dados.totalBruto.toFixed(2)}</div>
+                            <div>Desconto aplicado: R$ ${dados.desconto.toFixed(2)}</div>
+                            <div class="total">TOTAL LÍQUIDO: R$ ${dados.totalLiquido.toFixed(2)}</div>
+                        </div>
+                        ${obs ? `<div class="box"><div class="label">Observações:</div><div style="white-space:pre-wrap; margin-top:5px;">${obs}</div></div>` : ''}
+                        <div class="box"><div class="label">Condições de Pagamento:</div><div style="white-space:pre-wrap; margin-top:5px;">${condicoes}</div></div>
+                    </div>
+                </body>
+                </html>
+            `);
+        }
+
+        function atualizarPreview() {
+            const doc = gerarDoc();
+            const string = doc.output('bloburl');
+            document.getElementById('pdf-preview').src = string;
+        }
+
+        function enviarProposta() {
+            const doc = gerarDoc();
+            const cliente = document.getElementById('cliente').value || "Cliente";
+            const whatsapp = document.getElementById('whatsapp').value;
+            
+            doc.save(`Orcamento_AzDevCoder_${cliente.replace(/\s/g, '_')}.pdf`);
+            
+            if(whatsapp) {
+                const msg = encodeURIComponent(`Olá ${cliente}, segue a proposta comercial da AzDev Coder referente ao seu projeto.`);
+                window.open(`https://api.whatsapp.com/send?phone=${whatsapp}&text=${msg}`, '_blank');
+            } else {
+                alert("Proposta baixada! Informe o número do WhatsApp na barra lateral caso queira disparar a mensagem automática.");
+            }
+        }
+
+        window.onload = atualizarPreview;
+    </script>
 </body>
 </html>
